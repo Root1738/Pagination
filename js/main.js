@@ -1,3 +1,4 @@
+// variable declaration
 const fullPage = document.querySelector('.page');
 const pageHeader = document.querySelector('.page-header');
 const uStudentList = document.querySelector('.student-list');
@@ -60,30 +61,79 @@ const removeActiveClass = (totalPages) => {
   }
 }
 
-const searchList = () => {
-  const studentSearchDiv = document.createElement('div');
-  studentSearchDiv.className = 'student-search';
-  pageHeader.appendChild(studentSearchDiv);
-
+const searchList = (students) => {
+  // creating a search form & appending it
+  const studentSearchForm = document.createElement('form');
+  studentSearchForm.className = 'student-search';
+  pageHeader.appendChild(studentSearchForm);
+  // creating search input & appending it
   const searchInput = document.createElement('input');
   searchInput.setAttribute('type', 'search');
   searchInput.setAttribute('placeholder', 'Student Name');
-  studentSearchDiv.appendChild(searchInput);
-
+  studentSearchForm.appendChild(searchInput);
+  // creating a submit button and appending it
   const button = document.createElement('button');
   button.setAttribute('type', 'submit');
   button.textContent = 'Search';
-  studentSearchDiv.appendChild(button);
-  studentSearchDiv.addEventListener('submit', (e) => {
-    console.log('HELLO');
+  studentSearchForm.appendChild(button);
+
+  // adding submit handler to form to listen to the button & input
+  studentSearchForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const inputText = searchInput.value;
     searchInput.value = '';
+    const paginationDiv = document.querySelector('.pagination');
+    console.log(paginationDiv);
+
+    // if paginationDIV is not already removed (NULL), which will happen
+    // when previous search results are < 10
+    // then remove it
+    if (paginationDiv !== null) {
+      fullPage.removeChild(paginationDiv);
+    }
+
+    // creating an empty array to hold searched students
+    const resultsArr = [];
+
+      // traversing over each student
+      for (let i = 0; i < students.length; i += 1) {
+        // name set to h3 text
+        const name = students[i].querySelector('h3').textContent;
+        // email to sent to span text
+        const email = students[i].querySelector('span').textContent;
+
+        // if name  or email contains user's search
+        // add student to new array
+        if (name.indexOf(inputText) > -1 || email.indexOf(inputText) > -1) {
+          resultsArr.push(students[i]);
+        }
+      }
+      // hiding every student
+      for (let i = 0; i < students.length; i += 1) {
+          students[i].style.display = 'none';
+      }
+      if (resultsArr.length === 0) {
+        alert('No matched students!!');
+        // if more then 10 students
+        // append corrext # of pages
+        // show page 1 and set class to active
+      } else if (resultsArr.length > 10) {
+        appendPageLinks(resultsArr);
+        showPage(1, resultsArr);
+        document.querySelector('.pagination li a').className = 'active';
+      } else {
+        // else if results > 0 & < 10
+        // show them without creating page links
+        for (let i = 0; i < resultsArr.length; i += 1) {
+          resultsArr[i].style.display = '';
+        }
+      }
+
   });
 }
-
+// default function calls
 showPage(1, students);
 appendPageLinks(students);
-searchList();
+searchList(students);
 // Default -> sets first page to active
 document.querySelector('.pagination li a').className = 'active';
