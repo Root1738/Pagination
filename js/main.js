@@ -38,7 +38,6 @@ const appendPageLinks = students => {
 
   // Adding event Listener to the pagination unordered list
   paginationList.addEventListener('click', (e) => {
-    console.log(event.target.tagName);
     if (e.target.tagName === 'A') {
       // pageNumber = a.textContent
       const pageNumber = event.target.textContent;
@@ -72,10 +71,15 @@ const searchList = () => {
   studentSearchDiv.appendChild(searchInput);
 
   const button = document.createElement('button');
+  button.setAttribute('type', 'submit');
   button.textContent = 'Search';
   studentSearchDiv.appendChild(button);
-
-  const searchInputValue = searchInput.value;
+  studentSearchDiv.addEventListener('submit', (e) => {
+    console.log('HELLO');
+    e.preventDefault();
+    const inputText = searchInput.value;
+    searchInput.value = '';
+  });
 }
 
 showPage(1, students);
